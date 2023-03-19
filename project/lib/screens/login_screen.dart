@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:project/utilities/publicNavBar.dart';
 import 'package:project/screens/home.dart';
 import 'package:project/screens/sign_up.dart';
 import 'package:project/screens/social_page.dart';
@@ -228,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MyWidget()));
+            context, MaterialPageRoute(builder: (context) => NavBar()));
       },
       child: RichText(
         text: TextSpan(
