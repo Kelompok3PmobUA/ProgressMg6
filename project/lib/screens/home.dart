@@ -1,114 +1,222 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/social_page.dart';
-//import 'package:flutter_application_1/to-do use/to-do-list.dart';
-import 'package:project/utilities/home_body.dart';
-import 'package:project/utilities/publicAppBar.dart';
+import 'package:flutter_application_1/publicAppBar.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:project/utilities/publicNavBar.dart';
-import 'package:project/utilities/homenavBar.dart';
+import 'package:flutter_application_1/screen/publicNavBar.dart';
+import 'package:flutter_application_1/to-do use/homeAppBar.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:project/utilities/appBar.dart';
-import 'package:project/utilities/addTaskBox.dart';
+import 'package:flutter_application_1/to-do use/appBar.dart';
+import 'package:flutter_application_1/to-do use/addTaskBox.dart';
+
+// Create Model
+class ToDo {
+  // String id;
+  String toDoAct;
+  String toDoNote;
+  String toDoTime;
+  bool isDone;
+
+  ToDo({
+    // required this.id,
+    required this.toDoAct,
+    required this.toDoNote,
+    required this.toDoTime,
+    this.isDone = false,
+  });
+}
+
+// POP-UP ADD-TASK
+class AddTaskBox extends StatefulWidget {
+  const AddTaskBox({super.key});
+
+  @override
+  State<AddTaskBox> createState() => _AddTaskBoxState();
+}
+
+class _AddTaskBoxState extends State<AddTaskBox> {
+  final List<ToDo> _list = [];
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController subtitleController = TextEditingController();
+  final TextEditingController trailingController = TextEditingController();
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    subtitleController.dispose();
+    trailingController.dispose();
+    super.dispose();
+  }
+
+  void addItemToList() {
+    setState(() {
+      _list.add(ToDo(
+          toDoAct: titleController.text,
+          toDoNote: subtitleController.text,
+          toDoTime: trailingController.text));
+      titleController.clear();
+      subtitleController.clear();
+      trailingController.clear();
+    });
+  }
+
+  // void addToDoItem() {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Tambahkan Tugas',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontFamily: 'Nunito',
+              color: Color(0xFF2585DE),
+            ),
+          ),
+          SizedBox(height: 35),
+
+          // Input Activity
+          TextField(
+            controller: titleController,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Kegiatan',
+                fillColor: Color(0xFF2585DE)),
+          ),
+          SizedBox(height: 15),
+
+          // Input Keterangan Tambahan
+          TextField(
+            controller: subtitleController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Keterangan',
+            ),
+          ),
+          SizedBox(height: 15),
+
+          // Input Waktu
+          TextField(
+            controller: trailingController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Jam',
+            ),
+          ),
+          SizedBox(height: 20),
+
+          // Tombol save
+          SizedBox(
+            width: double.infinity,
+            child: FloatingActionButton(
+                onPressed: addItemToList,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: Text(
+                  'Simpan',
+                  style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20),
+                )),
+          )
+        ],
+      ),
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.items});
+  const HomePage({
+    super.key,
+  });
 
-  final List<ListTile> items;
+  // final List<ListTile> items;
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  final List<ToDo> _list = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            Container(
-              child: Column(
-                children: [
-                  // AppBar
-                  HomeAppBar(elevation: 0, flexibleSpace: Container()),
+      body: Stack(
+        children: <Widget>[
+          Column(
+            children: [
+              // AppBar
+              HomeAppBar(elevation: 0, flexibleSpace: Container()),
 
-                  // Body Page
-                  Expanded(
-                      child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: ListView.builder(
-                      itemCount: widget.items.length,
-                      itemBuilder: (context, int index) {
-                        return widget.items[index];
-                      },
-                    ),
-                  )),
+              // ListView.builder(itemBuilder: itemBuilder),
 
-                  // Expanded(
-                  //     child: ListView.builder(
-                  //   itemCount: widget.items.length,
-                  //   itemBuilder: (context, int index) {
-                  //     return widget.items[index];
-                  //   },
-                  // ))
-                ],
+              // Body Page
+              Expanded(
+                  child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: ListView(
+                  children: _list.map((e) {
+                    return ListTile(
+                      leading: Icon(Icons.pending_actions),
+                      title: Text(
+                        e.toDoAct,
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      subtitle: Text(
+                        e.toDoNote,
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      trailing: Text(
+                        e.toDoTime,
+                        style: TextStyle(
+                          color: Color(0xFF8C8C8C),
+                          fontFamily: 'Nunito',
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                // child: ListView.builder(
+                //   itemCount: widget.,
+                //   itemBuilder: (context, int index) {
+                //     return widget.items[index];
+                //   },
+                // ),
+              )),
+            ],
+          ),
+
+          // Add-task Button
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Container(
+              margin: EdgeInsets.only(
+                right: 20,
+                bottom: 75,
+              ),
+              child: FloatingActionButton(
+                // Adding task
+                onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AddTaskBox();
+                    }),
+                child: Icon(Icons.post_add_rounded),
               ),
             ),
-
-            // Add-task Button
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                margin: EdgeInsets.only(
-                  right: 20,
-                  bottom: 75,
-                ),
-                child: FloatingActionButton(
-                  // Adding task
-                  onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AddTaskBox();
-                      }),
-                  child: Icon(Icons.post_add_rounded),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: GNav(
-        backgroundColor: const Color(0xFFE3F2F9),
-        activeColor: const Color(0xFF2585DE),
-        iconSize: 24,
-        tabs: [
-          GButton(
-            icon: Icons.home_rounded,
-            text: 'Home',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SocialPage()),
-              );
-            },
-          ),
-          GButton(
-            icon: Icons.task_rounded,
-            text: 'Tasks',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage(items: [])),
-              );
-            },
-          ),
-          GButton(
-            icon: Icons.group_rounded,
-            text: 'Groups',
-          ),
-          GButton(
-            icon: Icons.person_rounded,
-            text: 'Profile',
           ),
         ],
       ),
@@ -116,45 +224,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-// // Create AppBar Here
-// buildAppBar() {
-//   return AppBar(
-//     elevation: 0,
-//     flexibleSpace: Container(
-//       decoration: const BoxDecoration(
-//         gradient: LinearGradient(
-//             begin: Alignment.topLeft,
-//             end: Alignment.bottomRight,
-//             colors: [
-//               Color(0xFF2585DE),
-//               Color(0xFFA4D3FF),
-//             ]),
-//       ),
-//     ),
-//     title: Column(
-//       children: [Text("Welcome Wahyu"), Text("Hari ini kamu punya x tugas")],
-//     ),
-//   );
-// }
-
-// // Create (Google) NavBar Here
-// NavBars() {
-//   return GNav(
-//       backgroundColor: Color(0xFFE3F2F9),
-//       activeColor: Color(0xFF2585DE),
-//       iconSize: 30,
-//       padding: EdgeInsets.all(20),
-//       tabs: const [
-//         GButton(
-//           icon: Icons.home_rounded,
-//         ),
-//         GButton(
-//           icon: Icons.task_rounded,
-//         ),
-//         GButton(
-//           icon: Icons.group_rounded,
-//         ),
-//         GButton(icon: Icons.person_rounded),
-//       ]);
-// }
